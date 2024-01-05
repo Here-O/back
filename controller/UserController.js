@@ -26,6 +26,7 @@ const newUser = asyncHandler(async (req, res) => {
         userEmail, 
         password: hashedPassword,
     })
+    console.log(user)
 
     res.status(201).send('User registered successfully');    
 

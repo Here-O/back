@@ -39,5 +39,11 @@ router
 .route("/signUp")
 .post(newUser);
 
+router
+.route("/todo")
+.get()
+.post()
+.patch();
+
 
 module.exports = router;
