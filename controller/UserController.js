@@ -11,7 +11,7 @@ const SECRET_KEY = 'HEREO_SECRET'
 const newUser = asyncHandler(async (req, res) => {
 
     console.log(req.body);
-    const {userEmail, password, username} = req.body;
+    const {userEmail, password, userName} = req.body;
 
     if (!userEmail || !password) {
         return res.status(400).send("필수값이 입력되지 않았습니다.");
@@ -31,11 +31,11 @@ const newUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         userEmail, 
         password: hashedPassword,
-        username,
+        userName,
     })
     console.log(user)
 
-    res.status(201).send('User registered successfully');    
+    res.status(200).send('User registered successfully');    
 
 });
 
@@ -74,8 +74,10 @@ const loginUser = asyncHandler(async (req, res) => {
         console.log(token)
 
         res.status(200).json({
-            code: 200,
-            message: "회원가입 완료",
+            id: loginUser.id,
+            email: loginUser.userEmail,
+            name: loginUser.userName,
+            message: "로그인 완료",
             jwt: token
         });
     }
