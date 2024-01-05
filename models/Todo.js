@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const todoSchema = new Schema(
 {
     id: {
-        type : String,
+        type : Number,
+        default: 0,
     },
     context: {
         type :String,

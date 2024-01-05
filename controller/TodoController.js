@@ -6,22 +6,29 @@ const Todo = require('../models/Todo');
 
 
 // Todo 생성
-// const newTodo = asyncHandler(async (req, res) => {
-//     console.log("Todo Create Req : " + req.body);
+const newTodo = asyncHandler(async (req, res) => {
+    console.log("Todo Create Req : " + req.body);
 
-//     const {context, date, loc, done, routine, point } = req.body;
+    const {context, date, loc, done, routine, point } = req.body;
 
-//     if (!context|| !date) {
-//         return res.status(400).send("필수값이 입력되지 않았습니다. ");
-//     }
+    if (!context|| !date) {
+        return res.status(400).send("필수값이 입력되지 않았습니다. ");
+    }
 
-//     const todo = await Todo.create({
-//         id:
-//     })
+    // const todo = await Todo.create({
+    //     context,
+    //     date,
+    //     loc,
+    //     done: false,
+    //     routine,
+    //     point
 
-//     // 
 
-// })
+    // })
+
+    
+
+})
 
 // Todo 삭제
 

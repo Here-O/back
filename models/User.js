@@ -7,6 +7,9 @@ const userSchema = new Schema(
         type : String,
         required: [true, "이메일은 꼭 기입해주세요."],
     },
+    username: {
+        type :String,
+    },
     password: {
         type :String,
     },
