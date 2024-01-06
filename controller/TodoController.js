@@ -6,6 +6,10 @@ const User = require("../models/User");
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = 'MY-SECRET-KEY';
 
+function isNull(data) {
+    return (data ===undefined || data === null) ? true: false;
+}
+
 // Todo 생성
 const newTodo = asyncHandler(async (req, res) => {
     console.log("헤더로 넘어온 토큰: " + req.headers.authorization);
@@ -22,28 +26,49 @@ const newTodo = asyncHandler(async (req, res) => {
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
         const {context, date, latitude, longitude, routine, point } = req.body;
-
-        if (!context|| !date) {
-            return res.status(400).send("필수값이 입력되지 않았습니다. ");
-        }
         // console.log("유저 아이디: " + loginUser._id)
         // console.log("유저 아이디: " + loginUser.id)
 
-        const todo = await Todo.create({
-            context,
-            date,
-            latitude,
-            longitude,
-            done: false,
-            routine,
-            point,
-            user: loginUser.id // 로그인 유저 id
-        });
-        console.log(todo);
+        // null이면 생성
+        if (isNull(req.body.id)) {
 
-        res.status(200).json({
-            Todo: todo
-        });
+            if (!context|| !date) {
+                return res.status(400).send("필수값이 입력되지 않았습니다. ");
+            }
+            const todo = await Todo.create({
+                context,
+                date,
+                latitude,
+                longitude,
+                done: false,
+                routine,
+                point,
+                user: loginUser.id // 로그인 유저 id
+            });
+            console.log(todo);
+    
+            res.status(200).json({
+                Todo: todo
+            });
+        } else{  // 수정요청 
+            const {id} = req.body;
+            console.log("id입력 있음: " + id)
+            const updateTodo = await Todo.findOne({_id: id});
+            console.log("updateTodo : " + updateTodo)
+
+            updateTodo.context = context;
+            updateTodo.date = date;
+            updateTodo.latitude = latitude;
+            updateTodo.longitude = longitude;
+            updateTodo.routine = routine;
+            updateTodo.point = point;
+
+            updateTodo.save();
+            res.status(200).json({
+                Todo: updateTodo
+            });
+        }
+
     } catch (error) {
         console.log(error);
         return res.status(401).send("토큰이 유효하지 않습니다.");
