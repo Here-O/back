@@ -28,6 +28,7 @@ const newTodo = asyncHandler(async (req, res) => {
         const {context, date, latitude, longitude, routine, point } = req.body;
         // console.log("유저 아이디: " + loginUser._id)
         // console.log("유저 아이디: " + loginUser.id)
+        console.log("현재 로그인 유저: " + loginUser.userEmail);
 
         // null이면 생성
         if (isNull(req.body.id)) {

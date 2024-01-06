@@ -32,7 +32,7 @@ const newUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         userEmail, 
         password: hashedPassword,
-        userImage: "defaultImage",
+        userImage: "https://hereo-bucket.s3.ap-northeast-2.amazonaws.com/free-icon-user-2549965.png",
         point: 0,
         userName,
     })
