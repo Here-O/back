@@ -30,7 +30,8 @@ const Todo = require('../models/Todo')
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 router.use(bodyParser.json()); // JSON 형식의 본문을 해석할 수 있도록 설정
-const {newUser, loginUser, myPage, accumTodo} = require("../controller/UserController");
+
+const {newUser, loginUser, myPage, accumTodo, topPoints} = require("../controller/UserController");
 const {newTodo, finishTodo, delTodo, getTodo} = require("../controller/TodoController");
 const {upload} = require("../controller/ImageUploader");
 
@@ -44,14 +45,15 @@ router
 .route("/signUp")
 .post(newUser);
 
-router
-.route("/mypage")
-.get(myPage);
-
 
 router
 .route("/login")
 .post(loginUser);
+
+
+router
+.route("/mypage")
+.get(myPage);
 
 
 router
@@ -64,6 +66,10 @@ router
 router
 .route("/mypage/point")
 .get(accumTodo);
+
+router
+.route("/points/user")
+.get(topPoints);
 
 router
 .route("/mypage/image")
@@ -90,12 +96,8 @@ router
     const decoded = jwt.verify(token, SECRET_KEY);
     const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
-    // 현재 로그인해서 사진을 수정하려는 유저 ==  s3에 있는 사진 주인인지?
-
-
-
-    // multer가 s3에 업로드하고, 해당 파일의 정보를 req.file 객체에 추가함
-    // 업로드된 파일URL 가져오기
+    // +(현재 로그인해서 사진을 수정하려는 유저 ==  s3에 있는 사진 주인인지?)
+    // multer가 s3에 업로드하고, 해당 파일의 정보를 req.file 객체에 추가함. 업로드된 파일URL 가져오기
     const fileUrl = req.file.location;
 
     // db 업데이트

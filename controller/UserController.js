@@ -147,4 +147,37 @@ const accumTodo = asyncHandler(async (req, res) => {
     }
 
 })
-module.exports = {newUser, loginUser, myPage, accumTodo};
+
+// 포인트가 많은 상위유저 5명 이름, 이미지 띄워주기
+const topPoints = asyncHandler(async (req, res) => {
+    
+    // 헤더에서 토큰 추출(근데 여기서 토큰이 왜 필요하지?)
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(403).send("토큰이 없습니다.");
+    }
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const loginUser = await User.findOne({userEmail : decoded.userEmail});
+
+        const topUsers = await User.find().sort({"point": -1}).limit(5).select("_id userName point userImage");  // point값을 사용해서 내림차순 정렬, 출력갯수 제한
+
+        // if (topUsers.some(user => user._id.toString() === loginUser._id.toString())){
+        //     const topUsers = await User.find().sort({"point": -1}).limit(6).select("_id userName point userImage");
+        // }
+
+
+        console.log("topUsers 정보: " + topUsers);
+        res.status(200).json({
+            topUsers: topUsers
+        });
+
+    } catch(error) {
+        console.log(error);
+    }
+
+
+})
+
+module.exports = {newUser, loginUser, myPage, accumTodo, topPoints};
