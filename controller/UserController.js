@@ -177,7 +177,32 @@ const topPoints = asyncHandler(async (req, res) => {
         console.log(error);
     }
 
-
 })
 
-module.exports = {newUser, loginUser, myPage, accumTodo, topPoints};
+// 다른 유저 포인트 적립 내역 조회
+const othersPointList = asyncHandler(async (req, res) => {
+    // 헤더에서 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
+    const { id } = req.body;
+    if (!token) {
+        return res.status(403).send("토큰이 없습니다.");
+    }
+
+    try{
+        // 조회하려는 유저 id 받아서, todoController의 getTodo
+        // const getUser = await User.find({_id: id});
+        console.log("조회하려는 User: " + id);
+
+        const completedTodoList = await Todo.find({user: id, done: true});
+
+        console.log("completedTodoList: " + completedTodoList);
+
+        res.status(200).json({
+            completedTodoList: completedTodoList
+        })
+    } catch(error) {
+        console.log(error);
+    }
+})
+
+module.exports = {newUser, loginUser, myPage, accumTodo, topPoints, othersPointList};

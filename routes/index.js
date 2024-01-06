@@ -31,7 +31,7 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 router.use(bodyParser.json()); // JSON 형식의 본문을 해석할 수 있도록 설정
 
-const {newUser, loginUser, myPage, accumTodo, topPoints} = require("../controller/UserController");
+const {newUser, loginUser, myPage, accumTodo, topPoints, othersPointList} = require("../controller/UserController");
 const {newTodo, finishTodo, delTodo, getTodo} = require("../controller/TodoController");
 const {upload} = require("../controller/ImageUploader");
 
@@ -68,8 +68,12 @@ router
 .get(accumTodo);
 
 router
-.route("/points/user")
+.route("/points/top")
 .get(topPoints);
+
+router
+.route("/points")
+.get(othersPointList);
 
 router
 .route("/mypage/image")
