@@ -8,10 +8,17 @@ const userSchema = new Schema(
         required: [true, "이메일은 꼭 기입해주세요."],
     },
     userName: {
-        type :String,
+        type:  String,
+    },
+    point: {
+        type: Number,
+    },
+    userImage: {
+        type: String,
+        default: "",
     },
     password: {
-        type :String,
+        type: String,
     },
     googleProfile : { type: Schema.Types.ObjectId, ref: 'googleSchema'},
     kakaoProfile: { type: Schema.Types.ObjectId, ref: 'kakaoSchema'}

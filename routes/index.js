@@ -27,7 +27,7 @@ const Todo = require('../models/Todo')
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 router.use(bodyParser.json()); // JSON 형식의 본문을 해석할 수 있도록 설정
-const {newUser, loginUser} = require("../controller/UserController");
+const {newUser, loginUser, myPage, accumTodo} = require("../controller/UserController");
 const {newTodo, finishTodo, delTodo, getTodo} = require("../controller/TodoController");
 
 
@@ -40,6 +40,9 @@ router
 .route("/signUp")
 .post(newUser);
 
+router
+.route("/mypage")
+.get(myPage);
 
 
 router
@@ -53,5 +56,9 @@ router
 .patch(finishTodo)
 .delete(delTodo)
 .get(getTodo);
+
+router
+.route("/mypage/point")
+.get(accumTodo);
 
 module.exports = router;

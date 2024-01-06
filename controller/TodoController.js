@@ -38,14 +38,14 @@ const newTodo = asyncHandler(async (req, res) => {
             routine,
             point,
             user: loginUser.id // 로그인 유저 id
-        })
-        console.log(todo)
+        });
+        console.log(todo);
 
         res.status(200).json({
             Todo: todo
         });
     } catch (error) {
-        console.log(error)
+        console.log(error);
         return res.status(401).send("토큰이 유효하지 않습니다.");
     }
 
@@ -55,7 +55,8 @@ const newTodo = asyncHandler(async (req, res) => {
 const finishTodo = asyncHandler(async (req, res) => {
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
-    const { todoId } = req.body;
+    const { id } = req.body;
+    console.log("완료하려는 todo id: " + id);
     if (!token) {
         return res.status(403).send("토큰이 없습니다.");
     }
@@ -63,14 +64,19 @@ const finishTodo = asyncHandler(async (req, res) => {
     try {
         const decoded = jwt.verify(token, SECRET_KEY);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
-        const curTodo = await Todo.findOne({id : todoId});
+        const curTodo = await Todo.findOne({_id : id});
 
-        console.log(curTodo.context);
+        if (curTodo.done) {
+            return res.status(200).send("이미 완료된 Todo 입니다.");
+        }
+        // console.log(curTodo);
         curTodo.done = true;
+        curTodo.doneAt = new Date();
         curTodo.save();
 
         loginUser.point += curTodo.point;
-        console.log(loginUser);
+        loginUser.save();
+        // console.log(loginUser);
         
         console.log(curTodo.context + "가 완료되었습니다.");
         res.status(200).json({

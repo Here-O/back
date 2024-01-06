@@ -25,7 +25,14 @@ const todoSchema = new Schema(
     point: {
         type : Number,
     },
-    user: {type : Schema.Types.ObjectId, ref: 'User'}
+    user: {
+        type : Schema.Types.ObjectId, 
+        ref: 'User'
+    },
+    doneAt: {
+        type: Date,
+        default: null,
+    }
 });
 
 

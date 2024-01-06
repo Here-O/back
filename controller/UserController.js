@@ -2,16 +2,17 @@ const asyncHandler = require("express-async-handler");
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const User = require('../models/User');
+const Todo = require('../models/Todo');
 
 const jwt = require('jsonwebtoken');
 const { token } = require("morgan");
-const SECRET_KEY = 'HEREO_SECRET'
+const SECRET_KEY = 'MY-SECRET-KEY'
 
 // 회원가입
 const newUser = asyncHandler(async (req, res) => {
 
     console.log(req.body);
-    const {userEmail, password, userName} = req.body;
+    const {userEmail, password, userName, userImage} = req.body;
 
     if (!userEmail || !password) {
         return res.status(400).send("필수값이 입력되지 않았습니다.");
@@ -31,11 +32,15 @@ const newUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         userEmail, 
         password: hashedPassword,
+        userImage: "defaultImage",
+        point: 0,
         userName,
     })
     console.log(user)
 
-    res.status(200).send('User registered successfully');    
+    res.status(200).json({
+        User: user
+    })    
 
 });
 
@@ -84,4 +89,62 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
-module.exports = {newUser, loginUser};
+
+// 내 정보
+const myPage = asyncHandler(async (req, res) => {
+
+    // 헤더에서 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
+    const { id } = req.body;
+    console.log(id)  // 삭제하려는 Todo의 id
+    if (!token) {
+        return res.status(403).send("토큰이 없습니다.");
+    }
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const loginUser = await User.findOne({userEmail : decoded.userEmail});
+        
+        // 이름, 이메일, 포인트합계, (+이미지)
+        const aboutUser = await User.find({userEmail: loginUser.userEmail}).select("_id userEmail userName point userImage");
+
+
+        res.status(200).json({
+            loginUser: aboutUser
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status("토큰이 유효하지 않습니다.");
+    }
+
+})
+
+
+// 포인트 적립내역 확인
+const accumTodo = asyncHandler(async (req, res) => {
+    
+    // 헤더에서 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(403).send("토큰이 없습니다.");
+    }
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const loginUser = await User.findOne({userEmail : decoded.userEmail});
+
+        // todo context, timestamp, point, total
+        const completedTodo = await Todo.find({user: loginUser._id, done: true}).select("context point doneAt");
+
+        console.log("완료한 Todo: " + completedTodo);
+
+        res.status(200).json({
+            TodoList: completedTodo
+        });
+    } catch(error) {
+        console.log(error);
+    }
+
+})
+module.exports = {newUser, loginUser, myPage, accumTodo};
