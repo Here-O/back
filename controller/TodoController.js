@@ -90,14 +90,32 @@ const delTodo = asyncHandler(async (req, res) => {
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     const { id } = req.body;
-    console.log(id)
+    console.log(id)  // 삭제하려는 Todo의 id
     if (!token) {
         return res.status(403).send("토큰이 없습니다.");
     }
 
+    const decoded = jwt.verify(token, SECRET_KEY);
+    const loginUser = await User.findOne({userEmail: decoded.userEmail});  // 로그인한 유저
+    console.log("로그인 유저 id: " + loginUser._id);
+
+    // const curTodo = await Todo.findById({ObjectId: id})
+    // console.log("삭제하려는 Todo id, curTodo._id: " + curTodo._id)
+    // const madeUser = await User.findOne({id : curTodo.user});
+
+
+    // console.log("curTodo._id: " + curTodo._id)
+    // console.log("curTodo.user: " + curTodo.user)
+    
+    // 현재 로그인사용자 이메일 != todo 생성자 이메일 => 이 로직 필요해보임
+    // if (loginUser.userEmail == ) {
+    //     return res.status(403).send("삭제 권한이 없습니다.");
+    // }
+
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        Todo.deleteOne({id: id});
+        // Todo.deleteOne({id: id});
+        await Todo.findByIdAndDelete(id);
+
 
         console.log("삭제완료");
         res.status(200).send('Todo Deleted successfully');    
@@ -110,5 +128,37 @@ const delTodo = asyncHandler(async (req, res) => {
 })
 
 // Todo 불러오기
+const getTodo = asyncHandler(async (req, res) => {
+    
+    // 헤더에서 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(403).send("토큰이 없습니다.");
+    }
+    console.log("헤더에서 토큰 추출: ", token);
 
-module.exports = {newTodo, delTodo, finishTodo};
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        const loginUser = await User.findOne({userEmail : decoded.userEmail});
+        console.log("현재 접속한 유저: " + loginUser);  // 여기까지 OK
+        // const TodoList = await Todo.findAll({
+        //     include: {
+        //         model: User,
+        //         where : {user: loginUser._id},
+        //     }
+        // })
+
+        const todoList = await Todo.find({user: loginUser._id});
+        console.log("모든 리스트 조회: " + todoList);
+
+        res.status(200).json({
+            Todo: todoList
+        })
+    } catch(error) {
+        return res.status(401).send("토큰이 유효하지 않습니다.");
+    } 
+
+})
+
+module.exports = {newTodo, finishTodo, delTodo, getTodo};
