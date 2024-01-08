@@ -1,12 +1,15 @@
 const asyncHandler = require("express-async-handler");
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 const User = require('../models/User');
 const Todo = require('../models/Todo');
 
 const jwt = require('jsonwebtoken');
 const { token } = require("morgan");
-const SECRET_KEY = 'MY-SECRET-KEY'
+
+// lib config
+dotenv.config();
 
 // 회원가입
 const newUser = asyncHandler(async (req, res) => {
@@ -50,8 +53,7 @@ const newUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     console.log("loginUser:", req.body);
     const {userEmail, password} = req.body;
-    const SECRET_KEY = 'MY-SECRET-KEY';
-
+    const secret = process.env.JWT_SECRET;
 
     // 해당 유저 없음
     const existingUser = await User.findOne({userEmail});
@@ -72,7 +74,7 @@ const loginUser = asyncHandler(async (req, res) => {
         {
             type: 'JWT',
             userEmail: userEmail,
-        }, SECRET_KEY, {
+        }, secret, {
             expiresIn: '15m', // 토큰 만료시간
             issuer: "토큰 발급자"
         });
@@ -96,13 +98,15 @@ const myPage = asyncHandler(async (req, res) => {
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     const { id } = req.body;
+    const secret = process.env.JWT_SECRET;
+
     console.log(id)  // 삭제하려는 Todo의 id
     if (!token) {
         return res.status(403).send("토큰이 없습니다.");
     }
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, secret);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
         
         // 이름, 이메일, 포인트합계, (+이미지)
@@ -123,6 +127,7 @@ const myPage = asyncHandler(async (req, res) => {
 
 // 포인트 적립내역 확인
 const accumTodo = asyncHandler(async (req, res) => {
+    const secret = process.env.JWT_SECRET;
     
     // 헤더에서 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
@@ -131,7 +136,7 @@ const accumTodo = asyncHandler(async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, secret);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
         // todo context, timestamp, point, total
@@ -150,7 +155,8 @@ const accumTodo = asyncHandler(async (req, res) => {
 
 // 포인트가 많은 상위유저 5명 이름, 이미지 띄워주기
 const topPoints = asyncHandler(async (req, res) => {
-    
+    const secret = process.env.JWT_SECRET;
+
     // 헤더에서 토큰 추출(근데 여기서 토큰이 왜 필요하지?)
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -158,7 +164,7 @@ const topPoints = asyncHandler(async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, secret);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
         const topUsers = await User.find().sort({"point": -1}).limit(5).select("_id userName point userImage");  // point값을 사용해서 내림차순 정렬, 출력갯수 제한
@@ -182,6 +188,7 @@ const topPoints = asyncHandler(async (req, res) => {
 // 다른 유저 포인트 적립 내역 조회
 const othersPointList = asyncHandler(async (req, res) => {
     // 헤더에서 토큰 추출
+    const secret = process.env.JWT_SECRET;
     const token = req.headers.authorization?.split(' ')[1];
     const { id } = req.body;
     if (!token) {

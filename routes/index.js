@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'MY-SECRET-KEY';
 
 // DB연결
 const mongoose = require('mongoose');
@@ -97,7 +96,7 @@ router
         return res.status(403).send("토큰이 없습니다.");
     }
 
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
     // +(현재 로그인해서 사진을 수정하려는 유저 ==  s3에 있는 사진 주인인지?)

@@ -7,8 +7,8 @@ const { randomUUID } = require('crypto');
 
 aws.config.update({
     region: 'ap-northeast-2',
-    accessKeyId: 'AKIA5MWHVF4CN2EIBTWR',  // process.env.AWS_ACCESS_KEY_ID
-    secretAccessKey: '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',  // process.env.AWS_SECRET_ACCESS_KEY
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID, // 'AKIA5MWHVF4CN2EIBTWR',
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, // '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'
 });
 
 const s3 = new aws.S3();

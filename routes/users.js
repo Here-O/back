@@ -1,6 +1,4 @@
 // var express = require('express');
-
-
 const express = require('express');
 var router = express.Router();
 
@@ -11,7 +9,7 @@ const app = express();
 // router.get('/', function(req, res, next) {
 //   res.send('respond with a resource');
 // });
-
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const GOOGLE_CLIENT_ID = '1020602620632-oph927qriokf4v9i9vogq3r5sh18beim.apps.googleusercontent.com';
 const GOOGLE_CLIENT_SECRET = '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';
@@ -20,7 +18,7 @@ const GOOGLE_SIGNUP_REDIRECT_URI = 'http://localhost:3000/signup/redirect';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 
-
+/*
 app.get('/login', (req, res) => {
     let url = 'https://accounts.google.com/o/oauth2/v2/auth';
     url += `?client_id=${GOOGLE_CLIENT_ID}`
@@ -69,6 +67,18 @@ app.get('/signup/redirect', async (req, res) => {
 // app.listen(3000, () => {
 //     console.log('server is running at 3000');
 // });
+
+*/
+
+
+// passport.use(new GoogleStrategy({
+//     clientID: GOOGLE_CLIENT_ID,
+//     clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
+//     callbackURL: 'https://www.example.com/oauth2/redirect/google',
+//     scope: [ 'profile' ],
+//     state: true
+//   },
+// }))
 
 
 module.exports = router;

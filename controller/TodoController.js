@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const Todo = require('../models/Todo');
 const User = require("../models/User");
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = 'MY-SECRET-KEY';
 
 function isNull(data) {
     return (data ===undefined || data === null) ? true: false;
@@ -20,9 +19,10 @@ const newTodo = asyncHandler(async (req, res) => {
         return res.status(403).send("토큰이 없습니다.");
     }
     console.log("헤더에서 토큰 추출: ", token);
+    console.log(req.body);
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
         const {context, date, latitude, longitude, routine, point } = req.body;
@@ -32,10 +32,12 @@ const newTodo = asyncHandler(async (req, res) => {
 
         // null이면 생성
         if (isNull(req.body.id)) {
-
+            console.log(context);
+            console.log(date);
             if (!context|| !date) {
                 return res.status(400).send("필수값이 입력되지 않았습니다. ");
             }
+            console.log("todo 생성전");
             const todo = await Todo.create({
                 context,
                 date,
@@ -88,7 +90,7 @@ const finishTodo = asyncHandler(async (req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
         const curTodo = await Todo.findOne({_id : id});
 
@@ -127,7 +129,7 @@ const delTodo = asyncHandler(async (req, res) => {
         return res.status(403).send("토큰이 없습니다.");
     }
 
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const loginUser = await User.findOne({userEmail: decoded.userEmail});  // 로그인한 유저
     console.log("로그인 유저 id: " + loginUser._id);
 
@@ -171,7 +173,7 @@ const getTodo = asyncHandler(async (req, res) => {
 
 
     try {
-        const decoded = jwt.verify(token, SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
         console.log("현재 접속한 유저: " + loginUser);  // 여기까지 OK
         // const TodoList = await Todo.findAll({
