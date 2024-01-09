@@ -21,6 +21,9 @@ const userSchema = new Schema(
         type: String,
         default: "",
     },
+    providerType: {
+        type: String,
+    },
     password: {
         type: String,
     },

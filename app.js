@@ -4,6 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+
+// const passport = require('passport');
+// require('./config/passport-config');
+
+// Passport 초기화
+// app.use(passport.initialize());
+// app.use(passport.session()); // 세션 사용 시 필요
+
+
+
 var indexRouter = require('./routes/index');
 // var usersRouter = require('./routes/users');
 
@@ -48,5 +58,22 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+// app.js
+// var passport = require('./controller/passport-config'); // Passport 설정 파일
+
+
+// 카카오 로그인 라우트
+// app.get('/auth/kakao', passport.authenticate('kakao'));
+
+// // 카카오 로그인 콜백 라우트
+// app.get('/auth/kakao/callback', 
+//   passport.authenticate('kakao', { failureRedirect: '/login' }),
+//   function(req, res) {
+//     // 성공적인 인증 후 리디렉션 또는 응답
+//     res.redirect('/');
+//   }
+// );
 
 module.exports = app;

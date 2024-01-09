@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
+
+const dotenv = require('dotenv');
+dotenv.config()
 
 // DB연결
 const mongoose = require('mongoose');
@@ -68,7 +72,7 @@ router
 
 router
 .route("/points/top")
-.get(topPoints);
+.post(topPoints);
 
 router
 .route("/points")
@@ -118,6 +122,14 @@ router
     });
   }
 
-})
+});
+
+// router.get('/kakao', passport.authenticate('kakao'));
+// router.get('/auth/kakao/callback', 
+//   passport.authenticate('kakao', { failureRedirect: '/login', }), 
+//     (req, res) => {
+//       res.redirect('/');
+//   }
+// );
 
 module.exports = router;

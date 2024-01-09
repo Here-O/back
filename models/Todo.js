@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Counter = require('./counterModel');  // Counter 모델 임포트
 

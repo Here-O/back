@@ -15,7 +15,7 @@ dotenv.config();
 const newUser = asyncHandler(async (req, res) => {
 
     console.log(req.body);
-    const {userEmail, password, userName, userImage} = req.body;
+    const {userEmail, password, userName } = req.body;
 
     if (!userEmail || !password) {
         return res.status(400).send("필수값이 입력되지 않았습니다.");
@@ -66,7 +66,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const loginUser = await User.findOne({ userEmail: req.body.userEmail});
     console.log(loginUser);
 
-    const match = bcrypt.compare(password, loginUser.password);
+    const match = await bcrypt.compare(password, loginUser.password);
     if (match) {
         console.log('User found');
         // login completed & 토큰 발급
@@ -87,8 +87,11 @@ const loginUser = asyncHandler(async (req, res) => {
             message: "로그인 완료",
             jwt: token
         });
+    } else{
+        res.status(403).json({
+            message: "비밀번호가 틀렸습니다.",
+        });
     }
-
 })
 
 
