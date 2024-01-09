@@ -72,11 +72,11 @@ router
 
 router
 .route("/points/top")
-.post(topPoints);
+.get(topPoints);
 
 router
 .route("/points")
-.get(othersPointList);
+.post(othersPointList);
 
 router
 .route("/mypage/image")
