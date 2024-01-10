@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 
 const jwt = require('jsonwebtoken');
-const passport = require('passport');
 
 const dotenv = require('dotenv');
 dotenv.config()
@@ -37,7 +36,7 @@ router.use(bodyParser.json()); // JSON 형식의 본문을 해석할 수 있도�
 const {newUser, loginUser, myPage, accumTodo, topPoints, othersPointList} = require("../controller/UserController");
 const {newTodo, finishTodo, delTodo, getTodo} = require("../controller/TodoController");
 const {upload} = require("../controller/ImageUploader");
-
+const passport = require('../config/passport-config');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -124,12 +123,43 @@ router
 
 });
 
-// router.get('/kakao', passport.authenticate('kakao'));
-// router.get('/auth/kakao/callback', 
-//   passport.authenticate('kakao', { failureRedirect: '/login', }), 
-//     (req, res) => {
-//       res.redirect('/');
+
+router.get('/auth/kakao', (req, res, next) => {
+  console.log('Kakao Auth Request Initiated');
+  next();
+}, passport.authenticate('kakao'));
+
+// router.get('/auth/kakao/callback',
+//   passport.authenticate('kakao', {
+//     failureRedirect: '/',
+//   }), (req, res) => {
+//     console.log("res: " + res);
+    
+//     res.redirect('/mypage')  // 성공시 리디렉션 경로
 //   }
 // );
+
+router.get('/auth/kakao/callback', (req, res, next) => {
+  passport.authenticate('kakao', (err, user, info) => {
+    if (err) {
+      console.error('Authentication Error:', err);
+      return next(err);
+    }
+    if (!user) {
+      console.log('Authentication Failed:', info);
+      return res.redirect('/');
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        console.error('Login Error:', err);
+        return next(err);
+      }
+      console.log('Authentication Successful, User:', user);
+      return res.redirect('/mypage');
+    });
+  })(req, res, next);
+});
+
+
 
 module.exports = router;

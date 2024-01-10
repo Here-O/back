@@ -172,6 +172,7 @@ const topPoints = asyncHandler(async (req, res) => {
 
         const topUsers = await User.find().sort({"point": -1}).limit(5).select("_id userName point userImage");  // point값을 사용해서 내림차순 정렬, 출력갯수 제한
 
+        // 내가 5등 안에 들어가면 나를 포함한 6명의 정보
         // if (topUsers.some(user => user._id.toString() === loginUser._id.toString())){
         //     const topUsers = await User.find().sort({"point": -1}).limit(6).select("_id userName point userImage");
         // }

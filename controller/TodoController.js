@@ -9,7 +9,7 @@ function isNull(data) {
     return (data ===undefined || data === null) ? true: false;
 }
 
-// Todo 생성
+// Todo 생성, 수정(완료)
 const newTodo = asyncHandler(async (req, res) => {
     console.log("헤더로 넘어온 토큰: " + req.headers.authorization);
 
@@ -18,26 +18,22 @@ const newTodo = asyncHandler(async (req, res) => {
     if (!token) {
         return res.status(403).send("토큰이 없습니다.");
     }
-    console.log("헤더에서 토큰 추출: ", token);
-    console.log(req.body);
+
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const loginUser = await User.findOne({userEmail : decoded.userEmail});
 
-        const {context, date, latitude, longitude, routine, point } = req.body;
-        // console.log("유저 아이디: " + loginUser._id)
-        // console.log("유저 아이디: " + loginUser.id)
+        const {context, date, latitude, longitude, routine, point, done } = req.body;
         console.log("현재 로그인 유저: " + loginUser.userEmail);
 
         // null이면 생성
         if (isNull(req.body.id)) {
-            console.log(context);
-            console.log(date);
+            // console.log(context);
+            // console.log(date);
             if (!context|| !date) {
                 return res.status(400).send("필수값이 입력되지 않았습니다. ");
             }
-            console.log("todo 생성전");
             const todo = await Todo.create({
                 context,
                 date,
@@ -49,23 +45,27 @@ const newTodo = asyncHandler(async (req, res) => {
                 user: loginUser.id // 로그인 유저 id
             });
             console.log(todo);
-    
+
             res.status(200).json({
                 Todo: todo
             });
-        } else{  // 수정요청 
+        } else{  // 수정요청
             const {id} = req.body;
             console.log("id입력 있음: " + id)
             const updateTodo = await Todo.findOne({_id: id});
             console.log("updateTodo : " + updateTodo)
-
             updateTodo.context = context;
             updateTodo.date = date;
             updateTodo.latitude = latitude;
             updateTodo.longitude = longitude;
             updateTodo.routine = routine;
-            updateTodo.point = point;
-
+            updateTodo.done = done;
+            
+            if (done) {  // 완료한거면
+                updateTodo.doneAt = new Date();
+                loginUser.point += updateTodo.point;  // 포인트 업데이트
+                loginUser.save();
+            }
             updateTodo.save();
             res.status(200).json({
                 Todo: updateTodo

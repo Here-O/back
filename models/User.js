@@ -9,7 +9,6 @@ const userSchema = new Schema(
 
     userEmail: {
         type : String,
-        required: [true, "이메일은 꼭 기입해주세요."],
     },
     userName: {
         type:  String,
@@ -22,7 +21,11 @@ const userSchema = new Schema(
         default: "",
     },
     providerType: {
-        type: String,
+        type: String,  // kakao, google, form
+    },
+    kakaoId: {
+        type: Number,
+        required: false
     },
     password: {
         type: String,
